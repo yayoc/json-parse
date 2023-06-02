@@ -114,10 +114,14 @@ class TokenStream {
 
         const numChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'E', '+', '-'];
 
-        // TODO: need more graceful handling here
         while (numChars.includes(this.peek(i))) {
           literal += this.peek(i);
           i++;
+        }
+
+        const validNumberFormat = /^-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?$/;
+        if (!validNumberFormat.test(literal)) {
+          throw Error('invalid number');
         }
 
         return {
