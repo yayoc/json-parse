@@ -153,7 +153,7 @@ class TokenStream {
       throw Error(`expected ${kind} but got ${t.kind}`);
     }
 
-    // forward at
+    // move at forward
     switch (t.kind) {
       case TokenKind.COLON:
       case TokenKind.COMMA:
@@ -193,7 +193,8 @@ class TokenStream {
   }
 
   private consumeWS(): void {
-    while (this.peek() === " ") {
+    const ws = ['\x20', '\x09', '\x0A', '\x0D'];
+    while (ws.includes(this.peek())) {
       this.at ++;
     }
   }
