@@ -17,11 +17,16 @@ enum TokenKind {
   NULL,
 }
 
-interface Token {
-  kind: TokenKind;
-  literal?: string;
+interface TokenWithoutLiteral {
+  kind: Exclude<TokenKind, TokenKind.NUMBER | TokenKind.STRING>
 }
 
+interface TokenWithLiteral {
+  kind: TokenKind.NUMBER | TokenKind.STRING,
+  literal: string
+}
+
+type Token = TokenWithLiteral | TokenWithoutLiteral;
 class TokenStream {
   at: number;
   text: string;
@@ -165,10 +170,10 @@ class TokenStream {
         this.at += 4;
         break;
       case TokenKind.NUMBER:
-        this.at += t.literal!.length || 0;
+        this.at += t.literal.length || 0;
         break;
       case TokenKind.STRING:
-        this.at += t.literal!.length + 2 || 0;
+        this.at += t.literal.length + 2 || 0;
         break;
     }
     return t;
@@ -218,13 +223,13 @@ class Parser {
   }
 
   private parseString(): string {
-    const t = this.ts.consume(TokenKind.STRING);
-    return t.literal!;
+    const t = this.ts.consume(TokenKind.STRING) as TokenWithLiteral;
+    return t.literal;
   }
 
   private parseNumber(): number {
-    const t = this.ts.consume(TokenKind.NUMBER);
-    return Number(t.literal!);
+    const t = this.ts.consume(TokenKind.NUMBER) as TokenWithLiteral;
+    return Number(t.literal);
   }
 
   private parseObject(): any {
@@ -232,9 +237,9 @@ class Parser {
 
     this.ts.consume(TokenKind.L_BRACE);
     while (this.ts.get().kind !== TokenKind.R_BRACE) {
-      const key = this.ts.consume(TokenKind.STRING);
+      const key = this.ts.consume(TokenKind.STRING) as TokenWithLiteral;
       this.ts.consume(TokenKind.COLON);
-      obj[key.literal!] = this.parseValue();
+      obj[key.literal] = this.parseValue();
 
       if (this.ts.get().kind === TokenKind.R_BRACE) {
         break;

@@ -18,5 +18,8 @@ describe('parse', () => {
     test('parse an object', () => {
         expect(parse('{ "key": 123 }')).toStrictEqual({ key: 123 });
     });
+    test('parse a nested object', () => {
+        expect(parse('{ "key1": { "key2": 123 } }')).toStrictEqual({ key1: { key2: 123 } });
+    });
 });
 
