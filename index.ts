@@ -116,7 +116,6 @@ class TokenStream {
 
         // TODO: need more graceful handling here
         while (numChars.includes(this.peek(i))) {
-          console.log(this.peek(i));
           literal += this.peek(i);
           i++;
         }
