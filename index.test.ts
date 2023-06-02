@@ -28,8 +28,10 @@ describe('parse', () => {
     text  
     ${`[`} 
     ${`[[]`} 
+    ${`[]]`} 
     ${`{`} 
     ${`{{}`} 
+    ${`{}}`} 
 
   `("thrown an exception when $text is passed", ({ text }) => {
     expect(() => parse(text)).toThrowError(); 

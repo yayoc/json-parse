@@ -178,6 +178,16 @@ class TokenStream {
     return t;
   }
 
+  public hasChars(): boolean {
+    while (this.at < this.text.length) {
+      if (this.peek() !== ' ') {
+        return true;
+      }
+      this.at++;
+    }
+    return false;
+  }
+
   private consumeWS(): void {
     while (this.peek() === " ") {
       this.at ++;
@@ -196,7 +206,11 @@ class Parser {
   }
 
   public parse(): any {
-    return this.parseValue();
+    const value = this.parseValue();
+    if (this.ts.hasChars()) {
+      throw Error('syntax error');
+    }
+    return value;
   }
 
   private parseValue(): any {
@@ -211,10 +225,13 @@ class Parser {
       case TokenKind.NUMBER:
         return this.parseNumber();
       case TokenKind.TRUE:
+        this.ts.consume(TokenKind.TRUE);
         return true;
       case TokenKind.FALSE:
+        this.ts.consume(TokenKind.FALSE);
         return false;
       case TokenKind.NULL:
+        this.ts.consume(TokenKind.NULL);
         return null;
       default:
         throw Error("unexpected value");
