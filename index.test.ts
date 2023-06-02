@@ -3,23 +3,35 @@ import { describe, test, expect } from '@jest/globals';
 import { parse } from './index';
 
 describe('parse', () => {
-    test('parse an empty array', () => {
-        expect(parse('[]')).toStrictEqual([]);
-    });
-    test('parse a nested array', () => {
-        expect(parse('[[[]]]')).toStrictEqual([[[]]]);
-    });
-    test('parse an array including elements', () => {
-        expect(parse('[1,2,3]')).toStrictEqual([1,2,3]);
-    });
-    test('parse a string', () => {
-        expect(parse('\"aaa\"')).toStrictEqual("aaa");
-    });
-    test('parse an object', () => {
-        expect(parse('{ "key": 123 }')).toStrictEqual({ key: 123 });
-    });
-    test('parse a nested object', () => {
-        expect(parse('{ "key1": { "key2": 123 } }')).toStrictEqual({ key1: { key2: 123 } });
-    });
-});
+  test.each<{ text: string, expected: any }>`
+    text | expected
+    ${`[]`} | ${[]}
+    ${`[[[]]]`} | ${[[[]]]}
+    ${`[1,2,3]`} | ${[1,2,3]}
+    ${`\"aaa\"`} | ${"aaa"}
+    ${`{ "key": 123 }`} | ${{key: 123}}
+    ${`{ "key1": { "key2": 123 } }`} | ${{key1: { key2: 123 }}}
+    ${`123`} | ${123}
+    ${`-123`} | ${-123}
+    ${`123.01`} | ${123.01}
+    ${`123e1`} | ${1230}
+    ${`123E-1`} | ${12.3}
+    ${`true`} | ${true}
+    ${`false`} | ${false}
+    ${`null`} | ${null}
 
+  `("expected $expected when $text is passed", ({ text, expected }) => {
+    expect(parse(text)).toStrictEqual(expected); 
+  });
+
+  test.each<{ text: string }>`
+    text  
+    ${`[`} 
+    ${`[[]`} 
+    ${`{`} 
+    ${`{{}`} 
+
+  `("thrown an exception when $text is passed", ({ text }) => {
+    expect(() => parse(text)).toThrowError(); 
+  });
+})
