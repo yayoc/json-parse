@@ -18,12 +18,12 @@ enum TokenKind {
 }
 
 interface TokenWithoutLiteral {
-  kind: Exclude<TokenKind, TokenKind.NUMBER | TokenKind.STRING>
+  kind: Exclude<TokenKind, TokenKind.NUMBER | TokenKind.STRING>;
 }
 
 interface TokenWithLiteral {
-  kind: TokenKind.NUMBER | TokenKind.STRING,
-  literal: string
+  kind: TokenKind.NUMBER | TokenKind.STRING;
+  literal: string;
 }
 
 type Token = TokenWithLiteral | TokenWithoutLiteral;
@@ -112,7 +112,23 @@ class TokenStream {
         let literal = char;
         let i = 1;
 
-        const numChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'E', '+', '-'];
+        const numChars = [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          ".",
+          "e",
+          "E",
+          "+",
+          "-",
+        ];
 
         while (numChars.includes(this.peek(i))) {
           literal += this.peek(i);
@@ -121,12 +137,12 @@ class TokenStream {
 
         const validNumberFormat = /^-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?$/;
         if (!validNumberFormat.test(literal)) {
-          throw Error('invalid number');
+          throw Error("invalid number");
         }
 
         return {
           kind: TokenKind.NUMBER,
-          literal
+          literal,
         };
       }
       case '"': {
@@ -139,7 +155,7 @@ class TokenStream {
 
         return {
           kind: TokenKind.STRING,
-          literal
+          literal,
         };
       }
       default:
@@ -184,7 +200,7 @@ class TokenStream {
 
   public hasChars(): boolean {
     while (this.at < this.text.length) {
-      if (this.peek() !== ' ') {
+      if (this.peek() !== " ") {
         return true;
       }
       this.at++;
@@ -193,9 +209,9 @@ class TokenStream {
   }
 
   private consumeWS(): void {
-    const ws = ['\x20', '\x09', '\x0A', '\x0D'];
+    const ws = ["\x20", "\x09", "\x0A", "\x0D"];
     while (ws.includes(this.peek())) {
-      this.at ++;
+      this.at++;
     }
   }
 
@@ -213,7 +229,7 @@ class Parser {
   public parse(): any {
     const value = this.parseValue();
     if (this.ts.hasChars()) {
-      throw Error('syntax error');
+      throw Error("syntax error");
     }
     return value;
   }
@@ -254,7 +270,7 @@ class Parser {
   }
 
   private parseObject(): any {
-    const obj: {[key: string]: any} = {};
+    const obj: { [key: string]: any } = {};
 
     this.ts.consume(TokenKind.L_BRACE);
     while (this.ts.get().kind !== TokenKind.R_BRACE) {
